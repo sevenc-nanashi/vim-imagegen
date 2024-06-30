@@ -15,10 +15,12 @@ chmod +x vim-imagegen
 
 ```yml
 Usage: vim-imagegen [options] <manifest>
-  $GH_TOKEN, $GITHUB_TOKEN         GitHub Personal Access Token to use for API requests
-  -o, --output [OUTPUT]            Output file
-  -r, --run                        Whether to run Dockerfile
-  -y, --yes                        Run Dockerfile without asking for confirmation
+    $GH_TOKEN, $GITHUB_TOKEN         GitHub Personal Access Token to use for API requests
+    -o, --output [OUTPUT]            Output file
+    -s, --silent                     Do not print Dockerfile
+    -r, --run                        Whether to run Dockerfile
+    -i, --include-manifest           Whether to include the manifest in the Dockerfile
+    -y, --yes                        Run Dockerfile without asking for confirmation
 ```
 
 ## Manifest
