@@ -278,7 +278,7 @@ if (files = manifest["configs"])
 end
 
 dockerfile << ""
-dockerfile << "RUN if [ ! -f '#{entrypoint}' ]; then ls /usr; echo 'Entry point not found'; exit 1; fi"
+dockerfile << "RUN if [ ! -f '#{entrypoint}' ]; then echo 'Entry point not found'; exit 1; fi"
 
 dockerfile << ""
 dockerfile << "# Entrypoint"
