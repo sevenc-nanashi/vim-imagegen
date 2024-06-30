@@ -34,13 +34,19 @@ properties:
           description: The repository of the plugin.
         - type: object
           required: [repo]
+          oneOf:
+            - properties:
+                repo:
+                  type: string
+                  description: The repository of the plugin.
+                ref:
+                  type: string
+                  description: The reference of the plugin.
+            - properties:
+                path:
+                  type: string
+                  description: The path of the plugin (Must be a directory), relative to the manifest file.
           properties:
-            repo:
-              type: string
-              description: The repository of the plugin.
-            ref:
-              type: string
-              description: The reference of the plugin.
             name:
               type: string
               description: The name of the plugin, used for the directory name.

@@ -6,6 +6,7 @@ require "fileutils"
 require "yaml"
 require "io/console"
 require "base64"
+require "open3"
 
 require_relative "utils"
 
@@ -25,6 +26,9 @@ opt =
     end
     opts.on("-o", "--output [OUTPUT]", "Output file") do |o|
       options[:output] = o
+    end
+    opts.on("-s", "--silent", "Do not print Dockerfile") do |s|
+      options[:silent] = s
     end
     opts.on("-r", "--run", "Whether to run Dockerfile") do |r|
       options[:run] = r
@@ -176,7 +180,7 @@ when "vim"
   dockerfile << "RUN curl -Lfo /tmp/vim.AppImage #{appimage["browser_download_url"]}"
   dockerfile << "RUN chmod +x /tmp/vim.AppImage"
   dockerfile << "RUN /tmp/vim.AppImage --appimage-extract"
-  dockerfile << "RUN rsync /squashfs-root/usr/ /usr"
+  dockerfile << "RUN rsync -a /squashfs-root/usr/ /usr/"
 
   pack_root = "/root/.vim/pack/plugins/start"
   entrypoint = "/usr/bin/vim"
@@ -191,21 +195,59 @@ if (plugins = manifest["plugins"])
   dockerfile << "RUN mkdir -p #{pack_root}"
   plugins.each do |plugin|
     plugin = { "repo" => plugin } if plugin.is_a?(String)
-    name = plugin["name"] || plugin["repo"].split("/").last
-    remote = "https://github.com/#{plugin["repo"]}"
-    dockerfile << if plugin["ref"]
-      "RUN #{
+    if plugin["repo"]
+      name = plugin["name"] || plugin["repo"].split("/").last
+      remote = "https://github.com/#{plugin["repo"]}"
+      dockerfile << if plugin["ref"]
+        "RUN #{
+          [
+            "mkdir -p #{pack_root}/#{name}",
+            "cd #{pack_root}/#{name}",
+            "git init",
+            "git remote add origin #{remote}",
+            "git fetch --depth 1 origin #{plugin["ref"]}",
+            "git checkout FETCH_HEAD"
+          ].join(" && \\\n    ")
+        }"
+      else
+        "RUN git clone --depth 1 #{remote} #{pack_root}/#{name}"
+      end
+    elsif plugin["path"]
+
+      path = File.expand_path(plugin["path"])
+      raise "Path does not exist: #{path}" unless File.exist?(path)
+      raise "Path is not a directory: #{path}" unless File.directory?(path)
+
+      name = plugin["name"] || File.basename(path)
+
+      tgz, status =
+        Open3.capture2(
+          *if File.exist?(File.join(path, ".git"))
+            [
+              "git",
+              "-C",
+              path,
+              "archive",
+              "--format=tar.gz",
+              "HEAD",
+              chdir: path
+            ]
+          else
+            ["tar", "-czf", "-", "-C", path, "."]
+          end
+        )
+
+      raise "Failed to create tarball" unless status.success?
+
+      dockerfile << "RUN #{
         [
           "mkdir -p #{pack_root}/#{name}",
           "cd #{pack_root}/#{name}",
-          "git init",
-          "git remote add origin #{remote}",
-          "git fetch --depth 1 origin #{plugin["ref"]}",
-          "git checkout FETCH_HEAD"
+          "echo #{Base64.strict_encode64(tgz).strip} | base64 -d | tar -xz"
         ].join(" && \\\n    ")
       }"
     else
-      "RUN git clone --depth 1 #{remote} #{pack_root}/#{name}"
+      raise "Plugin must have a repo or path"
     end
 
     if plugin["post_install"]
@@ -236,13 +278,17 @@ if (files = manifest["configs"])
 end
 
 dockerfile << ""
+dockerfile << "RUN if [ ! -f '#{entrypoint}' ]; then ls /usr; echo 'Entry point not found'; exit 1; fi"
+
+dockerfile << ""
+dockerfile << "# Entrypoint"
 dockerfile << "ENV SHELL=/bin/bash"
 dockerfile << %(ENTRYPOINT ["/bin/bash", "-ic", "#{entrypoint}"])
 
 dockerfile_str = highlight_dockerfile(dockerfile.join("\n"))
 
 if output == "-"
-  puts dockerfile_str
+  puts dockerfile_str unless options[:silent]
 else
   File.write(output, dockerfile.join("\n"))
   puts "Wrote Dockerfile to #{output}"

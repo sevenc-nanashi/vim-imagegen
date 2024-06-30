@@ -15,10 +15,10 @@ chmod +x vim-imagegen
 
 ```yml
 Usage: vim-imagegen [options] <manifest>
-    $GH_TOKEN, $GITHUB_TOKEN         GitHub Personal Access Token to use for API requests
-    -o, --output [OUTPUT]            Output file
-    -r, --run                        Whether to run Dockerfile
-    -y, --yes                        Run Dockerfile without asking for confirmation
+  $GH_TOKEN, $GITHUB_TOKEN         GitHub Personal Access Token to use for API requests
+  -o, --output [OUTPUT]            Output file
+  -r, --run                        Whether to run Dockerfile
+  -y, --yes                        Run Dockerfile without asking for confirmation
 ```
 
 ## Manifest
@@ -37,6 +37,11 @@ plugins:
   - repo: neoclide/coc.nvim
     # and the ref (branch, tag, commit)
     ref: release
+
+  # or path to local directory. 
+  # (To make the Dockerfile portable, it generates a tarball, encode with base64, and decode it in the Dockerfile.
+  #  This makes the Dockerfile larger, so it is recommended to use the repository if possible.)
+  - path: .
 
   - vim-denops/denops.vim
   - vim-denops/denops-helloworld.vim
