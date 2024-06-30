@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+
+title: vim-imagegen Manifest
+
+type: object
+required: [vim]
+properties:
+  vim:
+    description: The configuration of the Vim editor.
+    type: object
+    required: [vim]
+    properties:
+      vim:
+        type: string
+        enum: [vim, neovim]
+        description: Whether to use Vim or Neovim.
+      version:
+        type: string
+        description: The version of the vim or neovim.
+  base_image:
+    description: The base image of the Dockerfile.
+    type: string
+  packages:
+    description: The list of apt packages to install.
+    type: array
+    items:
+      type: string
+  plugins:
+    description: The list of plugins to install.
+    type: array
+    items:
+      oneOf:
+        - type: string
+          description: The repository of the plugin.
+        - type: object
+          required: [repo]
+          properties:
+            repo:
+              type: string
+              description: The repository of the plugin.
+            ref:
+              type: string
+              description: The reference of the plugin.
+            name:
+              type: string
+              description: The name of the plugin, used for the directory name.
+            post_install:
+              type: string
+              description: The command to run after installing the plugin.
+
+  external:
+    description: The list of external binaries to install.
+    type: array
+    items:
+      oneOf:
+        - type: string
+          enum: [deno, node, ruby, python]
+          description: The name of the binary.
+        - type: object
+          required: [name, version]
+          properties:
+            name:
+              type: string
+              enum: [deno, node, ruby, python]
+              description: The name of the binary.
+            version:
+              type: string
+              description: The version of the binary.
+  configs:
+    description: The list of files to copy to the vim root (~/.vim or ~/.config/nvim).
+    type: object
+    properties:
+      .vimrc:
+        type: string
+        description: The content of the .vimrc file. Unlike other files, this is placed in the home directory.
+    additionalProperties:
+      type: string

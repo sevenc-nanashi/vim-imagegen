@@ -1,0 +1,17 @@
+Security/MarshalLoad:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Metrics:
+  Enabled: false
+
+Layout/LineLength:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+inherit_gem:
+  syntax_tree: config/rubocop.yml
