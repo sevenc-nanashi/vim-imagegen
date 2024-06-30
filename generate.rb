@@ -76,7 +76,7 @@ dockerfile << "RUN apt-get update && apt-get install -y curl git xz-utils bash r
 dockerfile << ""
 dockerfile << "# Binaries"
 
-manifest["binaries"]&.each do |binary|
+manifest["external"]&.each do |binary|
   binary = { "name" => binary } if binary.is_a?(String)
   case binary["name"]
   when "deno"

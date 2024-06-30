@@ -10,10 +10,10 @@ plugins:
 
   - vim-denops/denops.vim
   - vim-denops/denops-helloworld.vim
-binaries:
+external:
   # coc.nvim requires node
   - name: node
-    version: 20
+    version: "20"
 
   # denops requires deno
   - name: deno

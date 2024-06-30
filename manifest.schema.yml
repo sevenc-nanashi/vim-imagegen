@@ -57,7 +57,7 @@ properties:
           enum: [deno, node, ruby, python]
           description: The name of the binary.
         - type: object
-          required: [name, version]
+          required: [name]
           properties:
             name:
               type: string
