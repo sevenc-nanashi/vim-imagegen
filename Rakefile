@@ -3,7 +3,7 @@
 task "bundle" do
   require "fileutils"
 
-  files = %w[generate.rb utils.rb Gemfile]
+  files = %w[main.rb utils.rb Gemfile]
 
   contents =
     files.to_h do |file|
@@ -19,7 +19,7 @@ task "bundle" do
   vim_imagegen << "gemfile do\n"
   vim_imagegen << contents["Gemfile"]
   vim_imagegen << "end\n"
-  vim_imagegen << contents["generate.rb"].sub(
+  vim_imagegen << contents["main.rb"].sub(
     "require_relative \"utils\"",
     contents["utils.rb"]
   )

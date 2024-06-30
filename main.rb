@@ -13,7 +13,7 @@ options = {}
 opt =
   OptionParser.new do |opts|
     opts.banner = +<<~BANNER
-    Usage: generate.rb [options] <manifest>
+    Usage: vim-imagegen [options] <manifest>
     BANNER
     [
       [
