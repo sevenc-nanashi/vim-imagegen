@@ -25,6 +25,36 @@ Usage: vim-imagegen [options] <manifest>
 
 Please refer `manifest.schema.yml` for the schema, and `manifest.example.yml` for the example.
 
+```yml
+vim:
+  # Vim? Neovim?
+  vim: neovim
+
+# List of plugins to install. You can specify the repository...
+plugins:
+  - hrsh7th/vim-eft
+
+  - repo: neoclide/coc.nvim
+    # and the ref (branch, tag, commit)
+    ref: release
+
+  - vim-denops/denops.vim
+  - vim-denops/denops-helloworld.vim
+
+# Some plugins want external dependencies. You can specify them here.
+external:
+  - name: node
+    version: "20"
+
+  - name: deno
+
+configs:
+  # You can specify vimrc.
+  init.vim: |
+    nmap ; <Plug>(eft-repeat)
+    # ...
+```
+
 ## License
 
 This script is released under the MIT License.
