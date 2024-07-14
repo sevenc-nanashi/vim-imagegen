@@ -32,8 +32,9 @@ vim:
   # Vim? Neovim?
   vim: neovim
 
-# List of plugins to install. You can specify the repository...
+# List of plugins to install.
 plugins:
+  # You can specify the repository...
   - hrsh7th/vim-eft
 
   - repo: neoclide/coc.nvim
@@ -56,7 +57,8 @@ external:
   - name: deno
 
 configs:
-  # You can specify vimrc.
+  # These files be placed under ~/.vim or ~/.config/nvim.
+  # (Expect .vimrc, .vimrc will be placed on ~/.vimrc)
   init.vim: |
     nmap ; <Plug>(eft-repeat)
     # ...
